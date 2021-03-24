@@ -86,6 +86,20 @@ const viewDepartments = () => {
         runApp()
     });
 };
+const viewRoles = () => {
+    connection.query("SELECT * FROM roles", (err, res) => {
+        if(err) throw err
+        console.table(res)
+        runApp()
+    });
+};
+const viewEmployees = () => {
+    connection.query("SELECT * FROM employees", (err, res) => {
+        if(err) throw err
+        console.table(res)
+        runApp()
+    });
+};
 
 const addDepartment = () => {
     inquirer.prompt([
@@ -152,3 +166,41 @@ const addRole = () => {
     })
 }
 )}
+const addEmployee = () => {
+connection.query("SELECT * FROM roles", (err,res)=>{
+  if(err) throw err 
+
+inquirer.prompt([
+  {
+    name: "firstName",
+    type: "input",
+    message: "What is their first name?"
+  },
+  {
+    name: "lastName",
+    type: "input",
+    message: "What is their last name?"
+  },
+  {
+    name: "roleId", 
+    type: "rawlist",
+    message: "What is their role?",
+    choices: res.map(item => item.title)
+  },
+]).then((response) => {
+        const chosenRole = res.find(dept => dept.title === response.roleId)
+        connection.query("INSERT INTO employees SET ?", {
+            first_name: response.firstName,
+            last_name: response.lastName,
+            role_id: chosenRole.id,
+    },
+           function(err,res){
+            if(err) throw err
+            console.log("successfully added new employee!")
+            runApp()
+        }
+        )
+
+    })
+})
+}
